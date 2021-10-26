@@ -14,31 +14,21 @@ static const char *TAG = "DHT11";
 
 void DHT_task(void *pvParameter)
 {
-   DHT11_init(GPIO_NUM_4);
+   DHT11_init(GPIO_NUM_8);
    ESP_LOGI(TAG, "Starting DHT measurement!");
+   struct dht11_reading dth11_data;
    while(1)
    {
-    ESP_LOGI(TAG, "Temperature: %d", DHT11_read().temperature);
-    ESP_LOGI(TAG, "Humidity: %d", DHT11_read().humidity);
-    ESP_LOGI(TAG, "Status code: %d", DHT11_read().status);
-    vTaskDelay(3000 / portTICK_RATE_MS);
+        ESP_ERROR_CHECK(DHT11_read(&dth11_data));
+        ESP_LOGI(TAG, "Temperature: %d", dth11_data.temperature);
+        ESP_LOGI(TAG, "Humidity: %d", dth11_data.humidity);
+        vTaskDelay(3000 / portTICK_RATE_MS);
    }
 }
 
 void app_main(void)
 {
     nvs_flash_init();
-    // system_init();
     vTaskDelay(1000 / portTICK_RATE_MS);
     xTaskCreate(&DHT_task, "DHT_task", 2048, NULL, 5, NULL);
-
-// DHT11_init(GPIO_NUM_4);
-
-//     while(1) {
-//         printf("Temperature is %d \n", DHT11_read().temperature);
-//         printf("Humidity is %d\n", DHT11_read().humidity);
-//         printf("Status code is %d\n", DHT11_read().status);
-//         vTaskDelay(3000 / portTICK_RATE_MS);
-//     }
-
 }
